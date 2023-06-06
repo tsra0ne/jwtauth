@@ -3,7 +3,29 @@ const morgan = require('morgan')
 const createError = require('http-errors')
 require('dotenv').config()
 
+const authRoute = require('./routes/AuthRoutes')
+
 const app = express()
+
+app.get('/', async (req, res, next) => {
+    res.send("Hello from Express.")
+})
+
+app.use('/auth', authRoute)
+
+app.use(async (req, res, next) => {
+    next(createError.NotFound())
+})
+
+app.use((err, req, res, next) => {
+    res.status(err.status || 500)
+    res.send({
+        error: {
+            status: err.status || 500,
+            message: err.message
+        }
+    })
+})
 
 const PORT = process.env.PORT || 3000
 
